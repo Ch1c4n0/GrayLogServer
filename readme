@@ -1,0 +1,56 @@
+Class: https://youtu.be/uGK7oR2zTG4
+
+
+sudo dnf install java-11-openjdk-devel
+
+
+cat <<EOF | sudo tee /etc/yum.repos.d/elasticsearch.repo
+[elasticsearch-7.x]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/7.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+EOF
+
+rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+sudo dnf install -y elasticsearch
+
+rpm -qi elasticsearch
+
+sudo vim /etc/elasticsearch/elasticsearch.yml    --- Mudar: cluster.name: graylog
+
+vim /etc/elasticsearch/jvm.options --- Mudar: -Xms1g -Xmx1g
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now elasticsearch.service
+
+
+cat <<EOF | sudo tee /etc/yum.repos.d/mongodb-org-4.repo
+[mongodb-org-4]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/8/mongodb-org/4.4/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.4.asc
+EOF
+
+dnf install -y mongodb-org
+
+sudo systemctl enable --now mongod
+
+rpm -Uvh https://packages.graylog2.org/repo/packages/graylog-4.1-repository_latest.rpm
+
+dnf install -y graylog-server
+
+rpm -qi graylog-server
+
+sudo dnf install -y epel-release
+sudo dnf install -y pwgen
+
+sudo pwgen -N 1 -s 96
+
+sudo vi /etc/graylog/server/server.conf -- Mudar: password_secret e root_password_sha2
