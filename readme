@@ -1,3 +1,5 @@
+#Graylog Server
+
 Class: https://youtu.be/uGK7oR2zTG4
 
 
@@ -54,3 +56,34 @@ sudo dnf install -y pwgen
 sudo pwgen -N 1 -s 96
 
 sudo vi /etc/graylog/server/server.conf -- Mudar: password_secret e root_password_sha2
+
+#Sidecard
+
+setenforce 0;sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/sysconfig/selinux
+
+systemctl disable firewalld systemctl stop firewalld
+
+iptables -t nat -F;iptables -t filter -F
+
+yum install -y wget
+
+wget https://github.com/Graylog2/collector-sidecar/releases/download/1.0.2/graylog-sidecar-1.0.2-1.x86_64.rpm
+
+wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.8.1-x86_64.rpm
+
+rpm -i filebeat-6.8.1-x86_64.rpm
+
+rpm -i graylog-sidecar-1.0.2-1.x86_64.rpm
+
+systemctl enable filebeat && systemctl start filebeat && systemctl status filebeat
+
+sudo graylog-sidecar -service install
+
+sudo systemctl start graylog-sidecar
+
+
+
+
+
+
+
